@@ -2,10 +2,22 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>projekcia-camera-matrix</name>
-  <version>0.0.0</version>
+  <version>0.0.2</version>
   <description>TODO: Package description</description>
   <maintainer email="xjanec32@vutbr.cz">Tomas Janech</maintainer>
   <license>GNU GPLv3</license>
+
+  <build_depend>rclcpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>image_geometry</build_depend>
+  <build_depend>OpenCV</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>PCL</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>tf2_eigen</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf2</build_depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
