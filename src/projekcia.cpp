@@ -26,6 +26,7 @@ class pc2image: public rclcpp::Node{
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr FilteredPC;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr FilteredPCremoved;
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr CameraImage;
+    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr SegImageRos;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr ProjectedImage;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr ProjectedOverlay;
 
@@ -35,7 +36,7 @@ class pc2image: public rclcpp::Node{
 
     cv::Mat projected_points = cv::Mat::zeros(480,640,CV_8UC3);
     cv::Mat last_camera_image = cv::Mat::zeros(480,640,CV_8UC3);
-    cv::Mat segImage = cv::Mat::ones(480,640,CV_8U);
+    cv::Mat segImage = cv::Mat::zeros(480,640,CV_8U);
 
     Projector projection;
 
@@ -57,6 +58,27 @@ class pc2image: public rclcpp::Node{
         try
         {
             last_camera_image = imgConv->image;
+        }
+        catch(const cv::Exception& e)
+        {
+            RCLCPP_ERROR(this->get_logger(),"CV error: %s", e.what());
+        }
+        
+        
+    }
+
+    void SegReceived(const sensor_msgs::msg::Image &msg){
+        segImage = cv::Mat::zeros(480,640,CV_8U);
+        cv_bridge::CvImagePtr imgConv;
+        try{
+            imgConv = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::MONO8);
+        }
+        catch(cv_bridge::Exception &e){
+            RCLCPP_ERROR(this->get_logger(),"Error loading image");
+        }
+        try
+        {
+            segImage = imgConv->image;
         }
         catch(const cv::Exception& e)
         {
@@ -152,7 +174,7 @@ class pc2image: public rclcpp::Node{
     };
 
 public:
-    pc2image():Node("projekcia_obrazu"){
+    pc2image():Node("segmentationPcFilter"){
         this->declare_parameter<std::string>("point_cloud_topic","null");
         this->declare_parameter<std::string>("camera_topic","null");
         this->declare_parameter<std::string>("segmentation_topic","null");
@@ -195,6 +217,11 @@ public:
             10,
             std::bind(&pc2image::ImgReceived, this, std::placeholders::_1)
         );
+        SegImageRos = this->create_subscription<sensor_msgs::msg::Image>(
+            this->get_parameter("segmentation_topic").get_value<std::string>(),
+            10,
+            std::bind(&pc2image::SegReceived, this, std::placeholders::_1));
+
         ProjectedImage = this->create_publisher<sensor_msgs::msg::Image>("/projected_image", 10);
         ProjectedOverlay = this->create_publisher<sensor_msgs::msg::Image>("/projected_overlay", 10);
         FilteredPC = this->create_publisher<sensor_msgs::msg::PointCloud2>(this->get_parameter("output_cloud_name").get_value<std::string>(), 10);
