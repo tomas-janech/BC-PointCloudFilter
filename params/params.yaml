@@ -1,0 +1,12 @@
+projekcia_obrazu:
+  ros__parameters:
+    point_cloud_topic: TBD
+    # Base camera topic, should include CameraInfo
+    camera_topic: TBD
+    segmentation_topic: TBD
+    output_cloud_name: TBD
+    segmentation_classes: [void, dirt, sand, grass, tree, pole, water, sky, vehicle, container, asphalt, gravel, building, mulch, rock-bed, log, bicycle, person, fence, bush, sign, rock, bridge, concrete, picnic-table, barrier, puddle, mud, rubble]
+    segmentation_codes: [24, 5, 6, 7, 1, 23, 2, 3, 8, 0, 22, 21, 20, 19, 11, 18, 17, 16, 15, 9, 14, 4, 10, 13, 12, -1, -1, -1, -1]
+    remove_classes: [asphalt, gravel, grass, dirt]
+    output_removed: false
+    output_removed_cloud_name: TBD
