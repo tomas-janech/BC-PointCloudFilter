@@ -49,3 +49,10 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+# Editors
+.idea/
+.vscode/
+cmake-*/
+install/
+log/
