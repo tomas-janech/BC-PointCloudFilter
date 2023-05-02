@@ -78,30 +78,32 @@ class pc2image: public rclcpp::Node{
         for(auto point: points){
             cvDrawCircle(projected_points, point.mapped, 2, {0,0,255});
 
-            //int pointKey = segImage.at<int>(point.mapped);
+            int pointKey = segImage.at<uint8_t>(point.mapped);
 
-            /* if(std::find(segClasses.begin(),segClasses.end(),pointKey) != segClasses.end())
+            if(std::find(segClasses.begin(),segClasses.end(),pointKey) != segClasses.end())
                 outPc.emplace_back(point.original);
-            else if(out_removed)
-                removedOutPc.emplace_back(point.original); */
-
-            outPc.emplace_back(point.original);
+            else if(this->get_parameter("output_removed").get_value<bool>())
+                removedOutPc.emplace_back(point.original);
 
         }
-        outPc.emplace_back(1,1,1);
+
+        pcl::transformPointCloud(outPc,outPc,projection.inverseTransformMatrix);    
 
         sensor_msgs::msg::PointCloud2 outRosPc;
         pcl2ros(outPc,outRosPc);
         outRosPc.header.frame_id = "orpheus_1_velodyne_1";
         FilteredPC->publish(outRosPc);
 
+        pcl::transformPointCloud(removedOutPc,removedOutPc,projection.inverseTransformMatrix);
+
         sensor_msgs::msg::PointCloud2 outRemovedRosPc;
         pcl2ros(removedOutPc,outRemovedRosPc);
+        outRemovedRosPc.header.frame_id = "orpheus_1_velodyne_1";
         FilteredPCremoved->publish(outRemovedRosPc);
 
-        // TODO: publish camera with projected points 
+        cv::Mat projected_image = projected_points + last_camera_image;
         publishCVimage(projected_points, sensor_msgs::image_encodings::BGR8, ProjectedImage);
-        publishCVimage(last_camera_image, sensor_msgs::image_encodings::BGR8, ProjectedOverlay);
+        publishCVimage(projected_image, sensor_msgs::image_encodings::BGR8, ProjectedOverlay);
     }
 
     void publishCVimage(cv::Mat &mat, std::string encoding, rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr &publisher){
@@ -161,28 +163,42 @@ public:
         this->declare_parameter<bool>("output_removed",false);
         this->declare_parameter<std::string>("output_removed_cloud_name","null");
 
-        segClasses = {0,1,2,3,4,5,6,7,13,14,15,16,17,18,19};
-        out_removed = true;
+        auto segmentation_classes_codes = this->get_parameter("segmentation_codes").get_value<std::vector<int>>();
+        auto segmentation_classes = this->get_parameter("segmentation_classes").get_value<std::vector<std::string>>();
+        auto segmentation_classes_remove = this->get_parameter("remove_classes").get_value<std::vector<std::string>>();
+
+        if(segmentation_classes.size() != segmentation_classes_codes.size())
+            RCLCPP_WARN(this->get_logger(), "Ignoring last %ld segmentation classes!", segmentation_classes.size() - segmentation_classes_codes.size());
+
+        for (size_t i = 0; i < segmentation_classes_codes.size() && i < segmentation_classes.size(); i++){
+            segClasses.emplace_back(segmentation_classes_codes[i]);
+        }
+        
+        for (size_t i = 0; i < segmentation_classes_remove.size(); i++){
+            auto it = std::find(segmentation_classes.begin(),segmentation_classes.end(),segmentation_classes_remove[i]);
+            int index = std::distance(segmentation_classes.begin(), it);
+            segClasses.erase(std::remove(segClasses.begin(), segClasses.end(), segmentation_classes_codes[index]), segClasses.end());
+        }
 
         kalibracia = this->create_subscription<sensor_msgs::msg::CameraInfo>(
-            "/orpheus_1/sensors/realsense_2/camera_info",
+            this->get_parameter("camera_topic").get_value<std::string>() + "/camera_info",
             10,
             std::bind(&pc2image::msgRecieved, this, std::placeholders::_1)
         );
         InputPC = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-            "/orpheus_1/sensors/velodyne_1/velodyne_points",
+            this->get_parameter("point_cloud_topic").get_value<std::string>(),
             10,
             std::bind(&pc2image::projekcia, this, std::placeholders::_1)
         );
         CameraImage = this->create_subscription<sensor_msgs::msg::Image>(
-            "/orpheus_1/sensors/realsense_2/image_raw",
+            this->get_parameter("camera_topic").get_value<std::string>() + "/image_raw",
             10,
             std::bind(&pc2image::ImgReceived, this, std::placeholders::_1)
         );
         ProjectedImage = this->create_publisher<sensor_msgs::msg::Image>("/projected_image", 10);
         ProjectedOverlay = this->create_publisher<sensor_msgs::msg::Image>("/projected_overlay", 10);
-        FilteredPC = this->create_publisher<sensor_msgs::msg::PointCloud2>("/filteredCloud", 10);
-        FilteredPCremoved = this->create_publisher<sensor_msgs::msg::PointCloud2>("/filteredCloudRemoved", 10);
+        FilteredPC = this->create_publisher<sensor_msgs::msg::PointCloud2>(this->get_parameter("output_cloud_name").get_value<std::string>(), 10);
+        FilteredPCremoved = this->create_publisher<sensor_msgs::msg::PointCloud2>(this->get_parameter("output_removed_cloud_name").get_value<std::string>(), 10);
     };
 };
 

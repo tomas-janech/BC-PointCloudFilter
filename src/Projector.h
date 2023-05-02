@@ -48,7 +48,6 @@ class Projector: public rclcpp::Node{
 
     // Camera->Lidar geometry
     geometry_msgs::msg::Transform transform;
-    Eigen::Matrix4d transformMatrix;
     std::unique_ptr<tf2_ros::Buffer> buff;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
 
@@ -73,6 +72,10 @@ class Projector: public rclcpp::Node{
     bool numInRange(int point, int lower, int upper) const;
 
 public:
+
+    Eigen::Matrix4d transformMatrix;
+    Eigen::Matrix4d inverseTransformMatrix;
+
     Projector():Node("projektor"), cameraModel(), transformMatrix() {
         buff = std::make_unique<tf2_ros::Buffer>(this->get_clock());
         tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*buff);

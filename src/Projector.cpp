@@ -34,6 +34,8 @@ void Projector::getTransform(const sensor_msgs::msg::PointCloud2 &pc, const sens
     }
 
     transformMatrix = tf2::transformToEigen(transform).matrix();
+    inverseTransformMatrix = transformMatrix.inverse();
+    
 }
 
 void Projector::setCameraInfo(const sensor_msgs::msg::CameraInfo &camInfo)
