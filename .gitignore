@@ -54,5 +54,7 @@ CATKIN_IGNORE
 .idea/
 .vscode/
 cmake-*/
+
 install/
 log/
+launch/__pycache__*

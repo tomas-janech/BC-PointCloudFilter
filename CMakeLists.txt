@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(projekcia-camera-matrix)
+project(pointcloud_filter)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -19,16 +19,22 @@ find_package(tf2_eigen REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
 
-add_library(projection PUBLIC src/Projector.cpp) 
-
-add_executable(projekcia src/projekcia.cpp)
-
+# Build library
+add_library(projection src/Projector.cpp) 
 ament_target_dependencies(projection sensor_msgs image_geometry OpenCV pcl_ros pcl_conversions tf2_eigen tf2_ros tf2 rclcpp)
-target_link_libraries(projekcia projection)
-ament_target_dependencies(projekcia rclcpp sensor_msgs image_geometry cv_bridge OpenCV pcl_ros pcl_conversions)
 
+# Build main executable
+add_executable(pcfilter src/PC_Filter.cpp)
+target_link_libraries(pcfilter projection)
+ament_target_dependencies(pcfilter rclcpp sensor_msgs image_geometry cv_bridge OpenCV pcl_ros pcl_conversions)
+
+# Install package executable
 INSTALL(TARGETS
-  projekcia
+  pcfilter
   DESTINATION lib/${PROJECT_NAME})
+
+# "Install" parameters and lauch files
+INSTALL(DIRECTORY config launch
+  DESTINATION share/${PROJECT_NAME})
 
 ament_package()
