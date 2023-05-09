@@ -57,7 +57,14 @@ Package paramters:
 - `output_removed_cloud_name` {string} - Name of the removed PointCloud2.
 
 ## Examples
-### First example (people)
+### Example 1 (people)
 Filter is set to NOT remove the person class. Segmented image correctly regonises people therefore people are added to the output PointCloud for future processing. Ground is set as class to be removed and is removed in resulting PointCloud.
 
 ![Filter_example1](./examples/example1_en.png)
+
+_Note: Segmented images have been edited to highlight individual classes._
+
+### Example 2 (nature)
+Filter is set to remove any natural foliage, including grass and trees. Segmetation regonises ground as one class, grass. As we can see the point cloud has been almost fully removed by the filter.
+
+![Filter_example2](./examples/example2_en.png)
