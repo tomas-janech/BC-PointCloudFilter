@@ -48,15 +48,15 @@ ros2 launch launch/PC_Filter_launch.py
 ## Parameters
 
 Package paramters:
-- `point_cloud_topic` {string} - Base PointCloud2 topic to be filtered.
-- `camera_topic` {string} - Camera base topic used for segmentation (should include CameraInfo topic).
-- `segmentation_topic` {string} - Segmentation topic, __requires__ 1-channel 8-bit images.
-- `output_cloud_name` {string} - Name of the output (filtered) PointCloud2.
-- `segmentation_classes` {string[]} - Segmentation classes names. Defined by user.
-- `segmentation_codes` {int[]} - Segmentation number codes. __MUST__ match with image pixel colors. List in same order as segmentation_classes.
-- `remove_classes` {string[]} - User defined classes to be removed from Point Cloud.
-- `output_removed` {string} - Defines whether filter should publish removed points in seperate PointCloud.
-- `output_removed_cloud_name` {string} - Name of the removed PointCloud2.
+- `point_cloud_topic` `string` - Base PointCloud2 topic to be filtered.
+- `camera_topic` `string` - Camera base topic used for segmentation (should include CameraInfo topic).
+- `segmentation_topic` `string` - Segmentation topic, __requires__ 1-channel 8-bit images.
+- `output_cloud_name` `string` - Name of the output (filtered) PointCloud2.
+- `segmentation_classes` `string[]` - Segmentation classes names. Defined by user.
+- `segmentation_codes` `int[]` - Segmentation number codes. __MUST__ match with image pixel colors. List in same order as segmentation_classes.
+- `remove_classes` `string[]` - User defined classes to be removed from Point Cloud.
+- `output_removed` `bool` - Defines whether filter should publish removed points in seperate PointCloud.
+- `output_removed_cloud_name` `string` - Name of the removed PointCloud2.
 
 ## Examples
 ### Example 1 (people)
