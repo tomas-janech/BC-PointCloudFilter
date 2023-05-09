@@ -55,3 +55,9 @@ Package paramters:
 - `remove_classes` {string[]} - User defined classes to be removed from Point Cloud.
 - `output_removed` {string} - Defines whether filter should publish removed points in seperate PointCloud.
 - `output_removed_cloud_name` {string} - Name of the removed PointCloud2.
+
+## Examples
+### First example (people)
+Filter is set to NOT remove the person class. Segmented image correctly regonises people therefore people are added to the output PointCloud for future processing. Ground is set as class to be removed and is removed in resulting PointCloud.
+
+![Filter_example1](./examples/example1_en.png)
