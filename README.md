@@ -1,6 +1,8 @@
 # PointCloud Filter (ROS2 package)
 ROS2 package, build on humble distribution. This packages allows users to filter PointCloud data based on segmented image. Filtered classes can be set as ROS paramter as well as input clouds and segmented images (package accepts ROS PointCloud2, Image and CameraInfo topics). This package requires camera to be calibrated and have CameraInfo published in the same topic namespace as camera image (follow ROS2 camera naming conventions).
 
+_Note: Image segmetation is not a part of this package, but required part to make this package work. Performace of this filter is dependent on the quality of image segmentation._
+
 ## Dependecies
 
 This package is intended to be used within the ROS2 enviroment, requires 
@@ -62,9 +64,9 @@ Filter is set to NOT remove the person class. Segmented image correctly regonise
 
 ![Filter_example1](./examples/example1_en.png)
 
-_Note: Segmented images have been edited to highlight individual classes._
-
 ### Example 2 (nature)
 Filter is set to remove any natural foliage, including grass and trees. Segmetation regonises ground as one class, grass. As we can see the point cloud has been almost fully removed by the filter.
 
 ![Filter_example2](./examples/example2_en.png)
+
+_Note: Segmented images have been edited to highlight individual classes._
