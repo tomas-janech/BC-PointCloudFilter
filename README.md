@@ -65,7 +65,7 @@ Filter is set to NOT remove the person class. Segmented image correctly regonise
 ![Filter_example1](./examples/example1_en.png)
 
 ### Example 2 (nature)
-Filter is set to remove any natural foliage, including grass and trees. Segmetation regonises ground as one class, grass. As we can see the point cloud has been almost fully removed by the filter.
+Filter is set to remove any natural foliage or grass, including grass and trees. Segmetation regonises ground as one class, grass. As we can see the point cloud has been almost fully removed by the filter.
 
 ![Filter_example2](./examples/example2_en.png)
 
