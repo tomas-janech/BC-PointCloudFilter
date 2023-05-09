@@ -92,11 +92,11 @@ public:
 
     /**
      * \brief Calculates lidar->camera transform
+     * \details Uses CameraInfo frame_id from setCameraInfoMessage
      * \author Janech Tomas
-     * \param[in] pc PointCloud message, used for tf
-     * \param[in] img Image message, used for tf 
+     * \param[in] LidarBase tf base of used LiDAR
     */
-    void getTransform(const sensor_msgs::msg::PointCloud2 &pc, const sensor_msgs::msg::Image &img);
+    void getTransform(const std::string &LidarBase);
 
     /**
      * \brief Set camera parameters

@@ -21,25 +21,22 @@ std::vector<MappedPoint> Projector::pc2img(const sensor_msgs::msg::PointCloud2 &
     return out;
 }
 
-void Projector::getTransform(const sensor_msgs::msg::PointCloud2 &pc, const sensor_msgs::msg::Image &img)
-{
-    std::string camera_transform = img.header.frame_id;
-    std::string lidar_transform = pc.header.frame_id;
-
+void Projector::getTransform(const std::string &LidarBase){
+    std::string CameraBase = cameraData.header.frame_id;
+    
     try{
-        transform = buff->lookupTransform(camera_transform, lidar_transform, tf2::TimePointZero).transform;
+        transform = buff->lookupTransform(CameraBase, LidarBase, tf2::TimePointZero).transform;
     } catch(const tf2::TransformException & ex){
-        RCLCPP_WARN(this->get_logger(),"Can't compute transform between %s and %s \n %s", camera_transform.c_str(), lidar_transform.c_str(), ex.what());
+        RCLCPP_WARN(this->get_logger(),"Can't compute transform between %s and %s \n %s", CameraBase.c_str(), LidarBase.c_str(), ex.what());
         transform = geometry_msgs::msg::Transform();
     }
 
     transformMatrix = tf2::transformToEigen(transform).matrix();
     inverseTransformMatrix = transformMatrix.inverse();
-    
+
 }
 
-void Projector::setCameraInfo(const sensor_msgs::msg::CameraInfo &camInfo)
-{
+void Projector::setCameraInfo(const sensor_msgs::msg::CameraInfo &camInfo){
     cameraData = camInfo;
     cameraModel.fromCameraInfo(camInfo);
 }
