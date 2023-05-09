@@ -1,7 +1,6 @@
 segmentationPcFilter:
   ros__parameters:
     point_cloud_topic: /orpheus_1/sensors/velodyne_1/velodyne_points
-    # Base camera topic, should include CameraInfo
     camera_topic: /orpheus_1/sensors/realsense_2
     segmentation_topic: /algorithms/segmentaion
     output_cloud_name: /algorithms/pcfilter

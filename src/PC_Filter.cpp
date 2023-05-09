@@ -172,7 +172,7 @@ class pc2image: public rclcpp::Node{
     };
 
 public:
-    pc2image():Node("segmentationPcFilter"){
+    pc2image():Node("PC_filter"){
 
         // Parameters
         this->declare_parameter<std::string>("point_cloud_topic","null");

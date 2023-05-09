@@ -1,9 +1,6 @@
 # PointCloud Filter (ROS2 package)
 ROS2 package, build on humble distribution. This packages allows users to filter PointCloud data based on segmented image. Filtered classes can be set as ROS paramter as well as input clouds and segmented images (package accepts ROS PointCloud2, Image and CameraInfo topics). This package requires camera to be calibrated and have CameraInfo published in the same topic namespace as camera image (follow ROS2 camera naming conventions).
 
-_Disclosure_: 
-This package was created as a part of author's Bachelor's thesis.
-
 ## Dependecies
 
 This package is intended to be used within the ROS2 enviroment, requires 
@@ -28,9 +25,33 @@ This package requires the following:
 After installing all the required dependencies you can build this package as any other ROS2 package by running `colcon`:
 ```bash
 # Run in the package base directory.
+source /opt/ros/<ROS2 distribution>/setup.bash
 colcon build --packages-select pointcloud_filter
+```
+
+After building, source the package:
+```bash
+# Run in the package base directory.
+source ./install/setup.bash
 ```
 
 ## Launch
 
-## Parameters explained
+This package contains python launch file. This script will start ROS2 Node with parameters as configured in _config/PC_Filter_params.yaml_. To run this script run:
+```bash
+# Run in the package base directory.
+ros2 launch launch/PC_Filter_launch.py
+```
+
+## Parameters
+
+Package paramters:
+- `point_cloud_topic` {string} - Base PointCloud2 topic to be filtered.
+- `camera_topic` {string} - Camera base topic used for segmentation (should include CameraInfo topic).
+- `segmentation_topic` {string} - Segmentation topic, __requires__ 1-channel 8-bit images.
+- `output_cloud_name` {string} - Name of the output (filtered) PointCloud2.
+- `segmentation_classes` {string[]} - Segmentation classes names. Defined by user.
+- `segmentation_codes` {int[]} - Segmentation number codes. __MUST__ match with image pixel colors. List in same order as segmentation_classes.
+- `remove_classes` {string[]} - User defined classes to be removed from Point Cloud.
+- `output_removed` {string} - Defines whether filter should publish removed points in seperate PointCloud.
+- `output_removed_cloud_name` {string} - Name of the removed PointCloud2.
