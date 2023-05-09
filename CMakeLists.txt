@@ -35,13 +35,12 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-add_library(mylib
-            src/Projector.cpp) 
+add_library(projection PUBLIC src/Projector.cpp) 
 
 add_executable(projekcia src/projekcia.cpp)
 
-ament_target_dependencies(mylib sensor_msgs image_geometry OpenCV pcl_ros pcl_conversions tf2_eigen tf2_ros tf2 rclcpp)
-target_link_libraries(projekcia mylib)
+ament_target_dependencies(projection sensor_msgs image_geometry OpenCV pcl_ros pcl_conversions tf2_eigen tf2_ros tf2 rclcpp)
+target_link_libraries(projekcia projection)
 ament_target_dependencies(projekcia rclcpp sensor_msgs image_geometry cv_bridge OpenCV pcl_ros pcl_conversions)
 
 INSTALL(TARGETS
