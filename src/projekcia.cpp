@@ -188,19 +188,19 @@ public:
         auto segmentation_classes_codes = this->get_parameter("segmentation_codes").get_value<std::vector<int>>();
         auto segmentation_classes = this->get_parameter("segmentation_classes").get_value<std::vector<std::string>>();
         auto segmentation_classes_remove = this->get_parameter("remove_classes").get_value<std::vector<std::string>>();
+        std::multimap<std::string, int> classes;
 
         if(segmentation_classes.size() != segmentation_classes_codes.size())
             RCLCPP_WARN(this->get_logger(), "Ignoring last %ld segmentation classes!", segmentation_classes.size() - segmentation_classes_codes.size());
 
-        for (size_t i = 0; i < segmentation_classes_codes.size() && i < segmentation_classes.size(); i++){
-            segClasses.emplace_back(segmentation_classes_codes[i]);
-        }
+        for (size_t i = 0; i < segmentation_classes_codes.size() && i < segmentation_classes.size(); i++)
+            classes.insert({segmentation_classes[i],segmentation_classes_codes[i]});
+
+        for (size_t i = 0; i < segmentation_classes_remove.size(); i++)
+            classes.erase(segmentation_classes_remove[i]);
         
-        for (size_t i = 0; i < segmentation_classes_remove.size(); i++){
-            auto it = std::find(segmentation_classes.begin(),segmentation_classes.end(),segmentation_classes_remove[i]);
-            int index = std::distance(segmentation_classes.begin(), it);
-            segClasses.erase(std::remove(segClasses.begin(), segClasses.end(), segmentation_classes_codes[index]), segClasses.end());
-        }
+        for(const auto &[key, val]: classes)
+            segClasses.emplace_back(val);
 
         kalibracia = this->create_subscription<sensor_msgs::msg::CameraInfo>(
             this->get_parameter("camera_topic").get_value<std::string>() + "/camera_info",
