@@ -18,8 +18,6 @@
 
 #include "Projector.h"
 
-using PointType = pcl::PointXYZ;
-
 class pc2image: public rclcpp::Node{
     rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr kalibracia;
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr InputPC;
@@ -175,6 +173,8 @@ class pc2image: public rclcpp::Node{
 
 public:
     pc2image():Node("segmentationPcFilter"){
+
+        // Parameters
         this->declare_parameter<std::string>("point_cloud_topic","null");
         this->declare_parameter<std::string>("camera_topic","null");
         this->declare_parameter<std::string>("segmentation_topic","null");
@@ -185,6 +185,8 @@ public:
         this->declare_parameter<bool>("output_removed",false);
         this->declare_parameter<std::string>("output_removed_cloud_name","null");
 
+
+        // Filter classes decalration
         auto segmentation_classes_codes = this->get_parameter("segmentation_codes").get_value<std::vector<int>>();
         auto segmentation_classes = this->get_parameter("segmentation_classes").get_value<std::vector<std::string>>();
         auto segmentation_classes_remove = this->get_parameter("remove_classes").get_value<std::vector<std::string>>();
@@ -202,6 +204,8 @@ public:
         for(const auto &[key, val]: classes)
             segClasses.emplace_back(val);
 
+
+        // Subscribers
         kalibracia = this->create_subscription<sensor_msgs::msg::CameraInfo>(
             this->get_parameter("camera_topic").get_value<std::string>() + "/camera_info",
             10,
@@ -222,6 +226,8 @@ public:
             10,
             std::bind(&pc2image::SegReceived, this, std::placeholders::_1));
 
+
+        // Publishers
         ProjectedImage = this->create_publisher<sensor_msgs::msg::Image>("/projected_image", 10);
         ProjectedOverlay = this->create_publisher<sensor_msgs::msg::Image>("/projected_overlay", 10);
         FilteredPC = this->create_publisher<sensor_msgs::msg::PointCloud2>(this->get_parameter("output_cloud_name").get_value<std::string>(), 10);
